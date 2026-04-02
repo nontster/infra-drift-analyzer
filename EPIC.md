@@ -4,41 +4,41 @@
 
 ### Story 1.1: 2-Tier Configuration Meta Data Model
 **Type:** User Story
-**Description:** ในฐานะ System Admin และ Application Team ฉันต้องการระบบจัดการ Meta Data แบบ 2 ระดับ (Global และ App-specific) เพื่อกำหนดข้อยกเว้นและตัวแปรของ Environment ในการทำ Diff
+**Description:** As a System Admin and Application Team member, I want a 2-tier metadata management system (Global and App-specific) to define exceptions and environment variables for the diff process.
 
 **Acceptance Criteria (AC):**
-* **AC1:** สามารถตั้งค่า Tier 1 (Global Rules) ในระดับ System Properties หรือ Custom Table เพื่อกำหนด Ignore Fields เริ่มต้น (เช่น `sys_updated_on`) และ Global Anti-patterns
-* **AC2:** สามารถตั้งค่า Tier 2 (App-Specific Rules) โดยเพิ่ม Field (เช่น JSON format) ที่ `Application Service` CI เพื่อให้ App Team กำหนด Ignore List และ Environment Variable Mapping ของตัวเองได้
-* **AC3:** Backend logic สามารถนำข้อมูล Tier 1 และ Tier 2 มา Merge กันเพื่อใช้เป็น Rule Set ในการทำ Compare ได้อย่างถูกต้อง
+* **AC1:** Able to configure Tier 1 (Global Rules) at the System Properties or Custom Table level to define default ignored fields (e.g., `sys_updated_on`) and global anti-patterns.
+* **AC2:** Able to configure Tier 2 (App-Specific Rules) by adding a custom field (e.g., JSON format payload) to the `Application Service` CI, allowing App Teams to define their own ignore lists and environment-specific variable mappings.
+* **AC3:** Backend logic must successfully merge Tier 1 and Tier 2 rulesets to use as the baseline logic during the comparison process.
 
 ### Story 1.2: CSDM Data Fetching & Tree Construction
 **Type:** User Story
-**Description:** ในฐานะ Backend System ฉันต้องการดึงข้อมูล CI และความสัมพันธ์จากฐานข้อมูล ServiceNow เพื่อสร้างโครงสร้าง Tree สำหรับเปรียบเทียบ
+**Description:** As a Backend System, I want to fetch CI data and relationships from the ServiceNow database to construct a correct tree structure for comparison.
 
 **Acceptance Criteria (AC):**
-* **AC1:** ระบบสามารถเริ่มต้นค้นหาจาก `Application Service` CI และดึงข้อมูลความสัมพันธ์ลงมาได้ 3 ระดับ
-* **AC2:** โครงสร้างที่ได้ต้องเป็น Peer-level Structure โดยให้ Middleware (Tomcat/WebSphere) และ Database (Oracle) อยู่ในระดับเดียวกัน (Siblings) ภายใต้ VM (Host) เดียวกัน
-* **AC3:** สามารถดึงค่า Properties ทั้งหมดของ CI แต่ละตัวออกมาเป็นรูปแบบ Key-Value ได้แบบ Real-time
+* **AC1:** The system can initiate a search from the `Application Service` CI and fetch downstream relationships up to 3 levels deep.
+* **AC2:** The resulting structure must follow a Peer-Level hierarchy, placing Middleware (Tomcat/WebSphere) and Database (Oracle) at the same level (siblings) operating under the same VM (Host).
+* **AC3:** Capable of fetching all required CI properties as Key-Value pairs in real-time.
 
 ### Story 1.3: Diff Engine & Recursive Status Propagation
 **Type:** User Story
-**Description:** ในฐานะ Backend System ฉันต้องการเปรียบเทียบข้อมูล CI แบบ Peer-to-Peer และประมวลผลสถานะจากล่างขึ้นบน (Bottom-Up) เพื่อส่งให้ Frontend
+**Description:** As a Backend System, I want to execute a peer-to-peer CI data comparison and process the status bottom-up (recursive) to deliver accurate indicators to the frontend.
 
 **Acceptance Criteria (AC):**
-* **AC1:** ระบบสามารถเปรียบเทียบ Key-Value ระหว่าง Source และ Target และระบุได้ว่า Key ใดหายไป หรือ Value ใดแตกต่างกัน
-* **AC2:** ระบบสามารถคำนวณ `self_status` ของแต่ละ Node ได้ (Match, Mismatch, Warning, Ignore)
-* **AC3:** ระบบสามารถทำ Recursive Logic เพื่อดึงสถานะที่ร้ายแรงที่สุดของ Node ลูกขึ้นมาเป็น `tree_status` ของ Node แม่ได้
-* **AC4:** API Response ส่งกลับมาเป็น JSON structure ที่ครอบคลุมทั้ง Topology tree, diff data, และ status
+* **AC1:** The system can compare Key-Value pairs between Source and Target, accurately identifying missing keys or differing values.
+* **AC2:** The system can calculate the `self_status` of each individual node (Match, Mismatch, Warning, Ignore).
+* **AC3:** The system executes recursive logic to bubble up the highest severity status among child nodes, setting it as the `tree_status` of the parent node.
+* **AC4:** The API Response must return a properly structured JSON payload encompassing the topology tree, diff data, and all status indicators.
 
 ### Story 1.4: Anti-Pattern & Cluster Consistency Validation
 **Type:** User Story
-**Description:** ในฐานะ Tech Lead ฉันต้องการให้ระบบตรวจสอบ Anti-pattern และความสม่ำเสมอของ Cluster เพื่อป้องกันความเสี่ยง
+**Description:** As a Tech Lead, I want the system to validate anti-patterns and cluster consistency to prevent high-risk deployment errors.
 
 **Acceptance Criteria (AC):**
-* **AC1:** ระบบสามารถตรวจสอบ Keyword ใน Target Values (เช่น คำว่า `dev`, `uat` บน `prod`) หากพบให้ตั้งค่า Status เป็น Warning/Critical
-* **AC2:** ระบบสามารถ Validate IP Range ตามที่กำหนดไว้ใน Environment นั้นๆ ได้
-* **AC3:** หาก Target เป็น Cluster ระบบจะทำการดึงข้อมูล Node ทั้งหมดใน Cluster มาเปรียบเทียบกันเอง (Intra-Cluster) แบบ Background
-* **AC4:** หากพบ Configuration Drift ภายใน Target Cluster เดียวกัน ระบบต้องแนบ Warning Message ไปใน API Response
+* **AC1:** The system checks for restricted keywords in Target Values (e.g., finding `dev` or `uat` on `prod`). If detected, it sets the status to Warning/Critical.
+* **AC2:** The system can validate if IP addresses fall within the defined subnet/range for the target environment.
+* **AC3:** If the Target is a Cluster, the system performs a background intra-cluster comparison across all nodes within that cluster.
+* **AC4:** If intra-cluster configuration drift is detected, the system must append a Warning Message to the API Response.
 
 ---
 
@@ -46,33 +46,33 @@
 
 ### Story 2.1: Context Selector (Top Bar)
 **Type:** User Story
-**Description:** ในฐานะ User ฉันต้องการหน้าต่างควบคุมเพื่อระบุ Application Service และ Environment ที่ต้องการเปรียบเทียบ
+**Description:** As a User, I want a control panel to specify the Application Service and the specific environments/nodes I want to compare.
 
 **Acceptance Criteria (AC):**
-* **AC1:** มีช่อง Autocomplete ค้นหา `Application Service`
-* **AC2:** มี Dropdown เลือก Source CI และ Target CI
-* **AC3 (Cluster Logic):** หาก Target CI เป็น Cluster ระบบต้องแสดง Dropdown บังคับให้ User เลือก Target Node แบบเจาะจง โดยไม่มีการ Auto-select ค่าเริ่มต้น
-* **AC4:** ปุ่ม "Compare" จะถูก Disable จนกว่า User จะกรอก/เลือกข้อมูลบังคับทั้งหมดครบถ้วน
+* **AC1:** Contains an autocomplete search input for the `Application Service`.
+* **AC2:** Contains dropdown selectors for Source CI and Target CI.
+* **AC3 (Cluster Logic):** If the Target CI is identified as a cluster, the UI must display a mandatory dropdown forcing the user to explicitly select a specific Target Node (Auto-select/default selection is strictly prohibited).
+* **AC4:** The "Compare" action button remains disabled until the user has fully populated all mandatory fields and explicit selections.
 
 ### Story 2.2: CSDM Topology Tree View (Left Panel)
 **Type:** User Story
-**Description:** ในฐานะ User ฉันต้องการเห็นโครงสร้างสถาปัตยกรรมทั้งหมดพร้อม Visual Indicator เพื่อให้รู้ว่ามีจุดไหนที่มีความแตกต่าง
+**Description:** As a User, I want to see the full architectural structure alongside visual indicators so I can instantly locate configuration discrepancies.
 
 **Acceptance Criteria (AC):**
-* **AC1:** แสดงผล Tree View แบบเต็ม (Full Hierarchy) โดยอิงตาม API Response
-* **AC2:** หน้า UI แสดงวงกลมสี (Indicator) หน้าชื่อ CI ตาม `tree_status`: สีเขียว (Match), สีแดง (Mismatch), สีเหลือง (Warning), สีเทา (Ignore)
-* **AC3:** สามารถกด Expand/Collapse กิ่งของ Tree ได้
-* **AC4:** เมื่อ User คลิกที่ Node ใดๆ ระบบจะนำข้อมูลของ Node นั้นไปแสดงใน Diff Viewer ทางด้านขวา
+* **AC1:** Renders the full tree hierarchy based on the provided API response.
+* **AC2:** Displays color-coded indicator circles next to the CI name based on the `tree_status`: Green (Match), Red (Mismatch), Yellow (Warning), Gray (Ignore).
+* **AC3:** Allows users to interactively expand and collapse tree branches.
+* **AC4:** Clicking on any node within the tree automatically renders that node's detailed comparison data in the right panel.
 
 ### Story 2.3: Side-by-Side Diff Viewer (Right Panel)
 **Type:** User Story
-**Description:** ในฐานะ User ฉันต้องการดูรายละเอียดความแตกต่างของ Configuration แบบ Side-by-Side เพื่อการวิเคราะห์ที่แม่นยำ
+**Description:** As a User, I want to view detailed configuration differences side-by-side for accurate analysis.
 
 **Acceptance Criteria (AC):**
-* **AC1:** แสดงตารางเปรียบเทียบ 2 คอลัมน์ (Source ด้านซ้าย, Target ด้านขวา)
-* **AC2:** มีการใช้สี Highlight แบบ Git-style (เพิ่มเข้ามา = เขียว, ถูกลบ/ต่างกัน = แดง, เปลี่ยนแปลง = เหลือง)
-* **AC3:** มี Toggle Switch `Show only differences` เมื่อเปิดใช้งานจะซ่อนแถวที่ข้อมูลเหมือนกัน
-* **AC4:** มี Search Bar เพื่อค้นหา Key ภายในตารางแบบ Real-time
+* **AC1:** Displays a two-column comparison table (Source context on the left, Target context on the right).
+* **AC2:** Applies Git-style color highlighting to rows (Added = Green, Removed/Mismatch = Red, Modified = Yellow).
+* **AC3:** Includes a `Show only differences` toggle switch; when active, it hides all rows with matching data.
+* **AC4:** Includes a real-time search bar to filter specific keys within the rendered table.
 
 ---
 
@@ -80,9 +80,9 @@
 
 ### Story 3.1: Export Diff Results
 **Type:** User Story
-**Description:** ในฐานะ Change Manager ฉันต้องการ Export ผลการเปรียบเทียบเพื่อนำไปแนบเป็นหลักฐานใน Change Request
+**Description:** As a Change Manager, I want to export the comparison results to attach as validation evidence in a Change Request (CR).
 
 **Acceptance Criteria (AC):**
-* **AC1:** มีปุ่ม "Export" บน UI
-* **AC2:** สามารถเลือก Export รูปแบบไฟล์ได้ (CSV และ JSON)
-* **AC3:** ไฟล์ Export ต้องระบุข้อมูล Context (App Service, Source CI, Target CI, วันที่ทำการ Diff) และ List ของ Properties ที่มีความแตกต่าง หรือติด Anti-pattern
+* **AC1:** An "Export" button is accessible on the UI after a comparison is run.
+* **AC2:** Allows the user to select the export file format (CSV or JSON).
+* **AC3:** The exported document must include metadata context (App Service ID, Source CI, Target CI, Date/Time of execution) along with the isolated list of properties containing differences or anti-pattern warnings.
