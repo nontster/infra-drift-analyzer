@@ -1,14 +1,14 @@
 # Product Requirement Document (PRD): Infrastructure Drift Analyzer
-**Product Name:** Infrastructure Drift Analyzer
-**Document Version:** 3.0 (Updated Scope: Host-Level Configuration Comparison)
-**Target Platform:** ServiceNow
-**Product Manager:** Nont Banditwong
+* **Product Name:** Infrastructure Drift Analyzer
+* **Document Version:** 3.0 (Updated Scope: Host-Level Configuration Comparison)
+* **Target Platform:** ServiceNow
+* **Product Manager:** Nont Banditwong
 
 ---
 
 ## 1. Executive Summary & Objective
-**The Problem:** Currently, verifying Configuration Items (CIs) across different environments (e.g., UAT vs. PROD) prior to deployment is a manual and error-prone process. Configuration drift is a leading cause of production incidents, often resulting from missing keys or lingering lower-environment variables (e.g., UAT URLs in PROD).
-**The Solution:** Develop an On-Demand Impact Analysis tool within ServiceNow that performs a peer-to-peer, side-by-side comparison of CI configurations (Key-Value pairs) at the **Host (Server) level**. By filtering hosts via Application ID/Acronym and Environment (`used_for`), the tool empowers Application Teams to quickly identify server-level discrepancies and anti-patterns before executing a deployment.
+* **The Problem:** Currently, verifying Configuration Items (CIs) across different environments (e.g., UAT vs. PROD) prior to deployment is a manual and error-prone process. Configuration drift is a leading cause of production incidents, often resulting from missing keys or lingering lower-environment variables (e.g., UAT URLs in PROD).
+* **The Solution:** Develop an On-Demand Impact Analysis tool within ServiceNow that performs a peer-to-peer, side-by-side comparison of CI configurations (Key-Value pairs) at the **Host (Server) level**. By filtering hosts via Application ID/Acronym and Environment (`used_for`), the tool empowers Application Teams to quickly identify server-level discrepancies and anti-patterns before executing a deployment.
 
 ### 1.1 Out of Scope (Non-Goals)
 To ensure performance and focused delivery, V1 of this tool explicitly **excludes**:
